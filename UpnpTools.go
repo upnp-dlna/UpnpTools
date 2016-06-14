@@ -72,23 +72,23 @@ func main() {
 		}
 		switch menuSelect {
 		case 1:
-			upnpTools(addrs[interfaceNum])
+			upnpTools(&addrs[interfaceNum])
 			break
 		case 2:
-			ipv4(addrs[interfaceNum])
+			ipv4(&addrs[interfaceNum])
 			break
 		case 3:
-			wanStatus(addrs[interfaceNum])
+			wanStatus(&addrs[interfaceNum])
 			break
 		case 4:
-			showNat(addrs[interfaceNum])
+			showNat(&addrs[interfaceNum])
 			break
 		case 5:
-			addNat(addrs[interfaceNum])
+			addNat(&addrs[interfaceNum])
 		}
 	}
 }
-func wanStatus(_interface net.Interface) {
+func wanStatus(_interface *net.Interface) {
 	clearConsole()
 	up := upnp.NewUPNP(upnp.SERVICE_GATEWAY_STATE)
 	devices := up.GetAllCompatibleDevice(_interface, 1)
@@ -114,7 +114,7 @@ func wanStatus(_interface net.Interface) {
 	fmt.Print("Press enter")
 	getInput()
 }
-func showNat(_interface net.Interface) {
+func showNat(_interface *net.Interface) {
 	clearConsole()
 	service := ipv4Gateway(_interface, upnp.SERVICE_GATEWAY_IPV4_V2)
 	if service == nil {
@@ -155,7 +155,7 @@ func showNat(_interface net.Interface) {
 	fmt.Print("Press enter")
 	getInput()
 }
-func addNat(_interface net.Interface) {
+func addNat(_interface *net.Interface) {
 	fmt.Println("Please complete this :")
 	fmt.Print("External port : ")
 	extPort := getInput()
@@ -219,7 +219,7 @@ func addNat(_interface net.Interface) {
 	}
 	getInput()
 }
-func ipv4Gateway(_interface net.Interface, typeService string) *upnp.Service {
+func ipv4Gateway(_interface *net.Interface, typeService string) *upnp.Service {
 	up := upnp.NewUPNP(typeService)
 	devices := up.GetAllCompatibleDevice(_interface, 1)
 	if len(devices) == 0 {
@@ -241,7 +241,7 @@ func ExempleNewUPNP() {
 	if err != nil {
 		panic(err)
 	}
-	devices := up.GetAllCompatibleDevice(*_interface, 1)
+	devices := up.GetAllCompatibleDevice(_interface, 1)
 	if len(devices) == 0 {
 		return
 	}
@@ -260,7 +260,7 @@ func ExempleNewUPNP() {
 	getInput()
 
 }
-func ipv4(_interface net.Interface) {
+func ipv4(_interface *net.Interface) {
 	clearConsole()
 	service := ipv4Gateway(_interface, upnp.SERVICE_GATEWAY_IPV4_V2)
 	if service == nil {
@@ -284,7 +284,7 @@ func ipv4(_interface net.Interface) {
 	getInput()
 }
 
-func upnpTools(_interface net.Interface) {
+func upnpTools(_interface *net.Interface) {
 	clearConsole()
 	fmt.Println("Scanning...")
 	up := upnp.NewUPNPAllService()
@@ -312,6 +312,7 @@ func upnpTools(_interface net.Interface) {
 func selectService(device *upnp.Device) {
 	for {
 		clearConsole()
+		log.Println("UDN :", device.UDN)
 		services := device.GetAllService()
 		for n, service := range services {
 			fmt.Println(n, " : ", service.ServiceType)
@@ -369,6 +370,10 @@ func SetAction(service *upnp.Service) {
 			action.AddVariable(argument.GetName(), getInput())
 		}
 		rep, err := action.Send()
+		log.Println("Request : ", action.GetLastRequest())
+		log.Println("Response : ", action.GetLastResponse())
+		scpd, err := service.GetSCPD()
+		log.Println(scpd.URL)
 		if err != nil {
 			log.Println(err)
 			return
