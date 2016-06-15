@@ -8,7 +8,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"upnp"
+
+	upnp "github.com/micmonay/UPnP"
 
 	"github.com/apcera/termtables"
 )
@@ -234,32 +235,6 @@ func ipv4Gateway(_interface *net.Interface, typeService string) *upnp.Service {
 
 }
 
-//Exemple for get external ipv4 address from gateway
-func ExempleNewUPNP() {
-	up := upnp.NewUPNP(upnp.SERVICE_GATEWAY_IPV4_V2)
-	_interface, err := getInterface()
-	if err != nil {
-		panic(err)
-	}
-	devices := up.GetAllCompatibleDevice(_interface, 1)
-	if len(devices) == 0 {
-		return
-	}
-	services := devices[0].GetServicesByType(upnp.SERVICE_GATEWAY_IPV4_V2)
-	if len(services) == 0 {
-		return
-	}
-	service := services[0]
-	response, err := service.GetAction("GetExternalIPAddress").Send()
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	fmt.Println(response.ToString())
-	fmt.Print("Press enter")
-	getInput()
-
-}
 func ipv4(_interface *net.Interface) {
 	clearConsole()
 	service := ipv4Gateway(_interface, upnp.SERVICE_GATEWAY_IPV4_V2)
@@ -294,7 +269,7 @@ func upnpTools(_interface *net.Interface) {
 		for n, device := range devices {
 			fmt.Println(n, " : ", device.FriendlyName, " {", device.SerialNumber, "}")
 		}
-		fmt.Println("r : retour")
+		fmt.Println("r : return")
 		fmt.Print("Please select device number : ")
 		str := getInput()
 		if str == "r" {
@@ -317,7 +292,7 @@ func selectService(device *upnp.Device) {
 		for n, service := range services {
 			fmt.Println(n, " : ", service.ServiceType)
 		}
-		fmt.Println("r : retour")
+		fmt.Println("r : return")
 		fmt.Print("Please select service number : ")
 		input := getInput()
 		if input == "r" {
@@ -342,7 +317,7 @@ func SetAction(service *upnp.Service) {
 		for n, action := range actions {
 			fmt.Println(n, " : ", action.GetName())
 		}
-		fmt.Println("r : retour")
+		fmt.Println("r : return")
 		fmt.Print("Please select action number : ")
 		input := getInput()
 		if input == "r" {
@@ -385,6 +360,7 @@ func SetAction(service *upnp.Service) {
 			fmt.Println("Code : ", errorUpnp.ErrorCode)
 			fmt.Println("Description : ", errorUpnp.ErrorDescription)
 		}
+		fmt.Print("Press enter")
 		getInput()
 		clearConsole()
 	}
