@@ -10,8 +10,6 @@ import (
 	"strings"
 
 	upnp "github.com/micmonay/UPnP"
-
-	"github.com/apcera/termtables"
 )
 
 func clearConsole() {
@@ -125,9 +123,9 @@ func showNat(_interface *net.Interface) {
 	if action == nil {
 		return
 	}
-	table := termtables.CreateTable()
-	table.AddHeaders("Enabled", "Protocol", "Internal Client", "Internal Port", "External Port", "Time expired", "Description")
-	//fmt.Println("enabled | protocol | internal Port | internalClient | external Port | time | description")
+	//table := termtables.CreateTable()
+	//table.AddHeaders("Enabled", "Protocol", "Internal Client", "Internal Port", "External Port", "Time expired", "Description") // comment for compatibility
+	fmt.Println("enabled\t| protocol\t| internal Port\t| internalClient\t| external Port\t| time\t| description")
 	for i := 0; ; i++ {
 		action.AddVariable("NewPortMappingIndex", strconv.FormatInt(int64(i), 10))
 		rep, err := action.Send()
@@ -150,9 +148,10 @@ func showNat(_interface *net.Interface) {
 		enabled, _ := rep.GetValueArgument("NewEnabled")
 		portMappingDescription, _ := rep.GetValueArgument("NewPortMappingDescription")
 		leaseDuration, _ := rep.GetValueArgument("NewLeaseDuration")
-		table.AddRow(enabled, protocol, internalClient, internalPort, externalPort, leaseDuration, portMappingDescription)
+		//table.AddRow(enabled, protocol, internalClient, internalPort, externalPort, leaseDuration, portMappingDescription)
+		fmt.Println(enabled + "\t| " + protocol + "\t\t| " + internalPort + "\t\t| " + internalClient + "\t| " + externalPort + "\t\t| " + leaseDuration + "\t| " + portMappingDescription)
 	}
-	fmt.Println(table.Render())
+	//fmt.Println(table.Render())
 	fmt.Print("Press enter")
 	getInput()
 }
