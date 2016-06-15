@@ -7,6 +7,6 @@ For builing :
 go build UpnpTools
 ```
 
-Some binary is building in directory is in directory [bin](https://github.com/micmonay/UpnpTools/bin)
+Some binary is building in directory is in directory [bin](https://github.com/micmonay/UpnpTools/tree/master/bin)
 
 Actually I don't comment code, sorry
